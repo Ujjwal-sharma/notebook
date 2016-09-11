@@ -39,7 +39,7 @@
                                 </strong>
                             </span>
                             @endif
-                        </input>
+                       
                     </div>
                 </div>
                 <div class="row form-group">

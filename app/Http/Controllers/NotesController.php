@@ -4,33 +4,22 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-
-use Illuminate\Support\Facades\Auth;
-
 use App\Note;
+
+use App\Http\Requests;
 
 class NotesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        // $notebook=Auth::user()->notebook
-    }
+    
 
     /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function createNote($id)
+    public function createNote($notebookId)
     {
-        return view('notes.create')->withId($id);
-        
+        return view('notes.create')->with('id',$notebookId);
     }
 
     /**
@@ -41,8 +30,19 @@ class NotesController extends Controller
      */
     public function store(Request $request)
     {
+        
+        $this->validate($request,[
+            'title'=>'required|max:20|unique:notes,title',
+            'body'=>'required|min:50'
+
+            ]);
+
+
         Note::create($request->all());
-        return redirect()->route('notebooks.show',$request->notebook_id);
+
+        $notebookId=$request->notebook_id;
+
+        return redirect()->route('notebooks.show',compact('notebookId'));
     }
 
     /**
@@ -53,7 +53,8 @@ class NotesController extends Controller
      */
     public function show($id)
     {
-        $note=Note::where('id',$id)->first();
+        $note=Note::find($id);
+
         return view('notes.show',compact('note'));
     }
 
@@ -65,7 +66,7 @@ class NotesController extends Controller
      */
     public function edit($id)
     {
-        $note=Note::where('id',$id)->first();
+        $note= Note::find($id);
         return view('notes.edit',compact('note'));
     }
 
@@ -78,12 +79,13 @@ class NotesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $data= $request->except(['_method','_token']);
-        $note=Note::where('id',$id)->first();
-        $note->update($data);
+        $inputData= $request->all();
+
+        $note=Note::find($id);
+        $note->update($inputData);
+
         return redirect()->route('notebooks.show',$note->notebook_id);
-        // return back();
-        // dd("hi");
+        
     }
 
     /**
@@ -98,5 +100,5 @@ class NotesController extends Controller
         return back();
     }
 
-
+    
 }
