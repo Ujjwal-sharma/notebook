@@ -16,7 +16,6 @@ class CreateNotebooksTable extends Migration
         Schema::create('notebooks', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id');
-            $table->dropForeign('notebooks_user_id_foreign');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('name');
             // $table->string('description');
